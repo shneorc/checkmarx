@@ -1,40 +1,25 @@
- if (!$db){
-                                    
-                                    die("
-<font color='#F62817'>
-    <b>Error: Could not connect to database - ".mysql_error()."</b>
-</font>
-<p>\n");
-                                    include("admin_loginform.php");
-                                    mysql_close($db);
-                                    
-                                } //end of if
-                                else {
-                                    
-                                    //Leaving $admin and $password open to SQL injection for demonstration purposes
-                                    
-                                    $query="SELECT *
-                                        FROM admins
-                                        WHERE username='$admin' AND password='$password'";
-                                    $execute=mysql_query($query,$db);
-                                    if (mysql_num_rows($execute) == NULL){
-                                        
-                                        echo "
-    <font color='#F62817'>
-        <b>Error: Invalid username or password.</b>
-    </font>
-    <p>\n";
-                                        include("admin_loginform.php");
-                                        mysql_close($db);
-                                        
-                                    } //end of if
-                                    else {
-                                        
-                                        echo "
-        <font color='#5EFB6E'>
-            <b>Welcome to administration, $admin.
-            </font>
-        </b>
-        <br>\n";
-                                        echo "What do you want to do?
-            <br>\n";
+<?php
+
+if(get_magic_quotes_gpc()) {
+   $username = stripslashes($_GET['username']);
+   $password = stripslashes($_GET['password']);
+}
+
+$link = @mysql_connect('localhost', '', '') 
+    or die('Could not connect: ' . mysql_error());
+
+mysql_select_db('injectiontest', $link) 
+    or die('Could not select database.');
+
+
+$query = mysql_query("SELECT * FROM `users` "
+        . "WHERE `username` = '$username' "
+        . "AND `password` = '$password'");
+$row = mysql_fetch_assoc($query);
+
+if(mysql_num_rows($query) == 1) {
+    echo "Hello {$row['username']}!<br />";
+    echo "Your creditcard number is: {$row['creditcard']}";
+}
+
+?>
